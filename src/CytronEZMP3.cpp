@@ -21,7 +21,9 @@ Distributed as-is; no warranty is given.
 ******************************************************************************/
 
 #include "CytronEZMP3.h"
+#ifdef __AVR__
 #include <SoftwareSerial.h>
+#endif
 
 //
 CytronEZMP3::CytronEZMP3():
@@ -35,6 +37,7 @@ CytronEZMP3::~CytronEZMP3()
 {  
 }
 //
+#ifdef __AVR__
 bool CytronEZMP3::begin(uint8_t rxpin, uint8_t txpin,long baudrate)
 {
 	
@@ -54,8 +57,9 @@ bool CytronEZMP3::begin(uint8_t rxpin, uint8_t txpin,long baudrate)
 	return init();
 
 }
+#endif
 
-bool CytronEZMP3::begin(HardwareSerial &_hSerial, long baudrate)
+bool CytronEZMP3::begin(Uart &_hSerial, long baudrate)
 {
 	pinMode(PIN_BUSY, INPUT); 
 	_hSerial.begin(baudrate);
@@ -491,11 +495,13 @@ void CytronEZMP3::flush()
 
 void CytronEZMP3::listen()
 {
+	#ifdef __AVR__
 	if(!isHardwareSerial)
 	{
 		if(!swSerial->isListening())
 			swSerial->listen();
 	}
+	#endif
 }
 
 int CytronEZMP3::readForResponses(uint16_t cmd, uint16_t fail, unsigned int timeout, bool returnVal)

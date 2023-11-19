@@ -25,7 +25,10 @@ Distributed as-is; no warranty is given.
 
 #include "Arduino.h"
 #include "Stream.h"
+#ifdef __AVR__
 #include <SoftwareSerial.h>
+#define Uart HardwareSerial
+#endif
 
 #define EZMP3_RX_BUFFER_LEN 20
 #define PIN_BUSY A2
@@ -57,8 +60,10 @@ class CytronEZMP3: public Stream
   public:
 	CytronEZMP3();
 	~CytronEZMP3();
+	#ifdef __AVR__
 	bool begin(uint8_t rxpin = 2, uint8_t txpin = 3, long baudrate = 9600);
-	bool begin(HardwareSerial &_hSerial, long baudrate = 9600);
+	#endif
+	bool begin(Uart &_hSerial, long baudrate = 9600);
 	void setFolderOption (bool opt);
 	bool isPlaying() {return (!digitalRead(PIN_BUSY));}
 	void playPhysical (uint16_t num); 
@@ -104,7 +109,9 @@ class CytronEZMP3: public Stream
   private:
 	uint8_t _rxpin;
 	uint8_t _txpin;
+	#ifdef __AVR__
 	SoftwareSerial *swSerial;
+	#endif
 	bool isHardwareSerial;
 	bool _isReply;
 	int _received;
